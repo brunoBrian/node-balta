@@ -1,26 +1,13 @@
-const express = require('express');
+const app = require('../src/app');
 const debug = require('debug')('node:server');
 const http = require('http');
 
-const app = express();
-const port = normalizePort(process.env.PORTc||  3000);
+const port = normalizePort(process.env.PORT ||  3000);
 
 app.set('port', port);
 
 // Criando um server na porta 3000
 const server = http.createServer(app);
-// Arquivo de rota
-const router = express.Router();
-
-// Criando uma rota
-const route = router.get('/', (req, res, next) => {
-  res.status(200).send({
-    title: 'Node API',
-    version: '0.0.1'
-  });
-});
-
-app.get('/', route);
 
 server.listen(port);
 server.on('error', onError);
