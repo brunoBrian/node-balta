@@ -5,7 +5,34 @@ const Product = mongoose.model('Product');
 
 // Listando produtos
 exports.get = (req, res, next) => {
-  Product.find({ active: true }, 'name manufacturerName line petType description racePorte race age amount indication use type howToUse benefits smell materialType tags date').then( data => {
+  Product.find({ active: true }, 'name manufacturerName image line petType description racePorte race age amount indication use slug type howToUse benefits smell materialType tags date').then( data => {
+    res.status(200).send(data);
+  }).catch(error => {
+    res.status(400).send(error);
+  });
+}
+
+// Pegando produto pelo slug
+exports.getBySlug = (req, res, next) => {
+  Product.findOne({ slug: req.params.slug, active: true }, 'name image manufacturerName line petType description racePorte race age amount indication use slug type howToUse benefits smell materialType tags date').then( data => {
+    res.status(200).send(data);
+  }).catch(error => {
+    res.status(400).send(error);
+  });
+}
+
+// Pegando produto pelo id
+exports.getById = (req, res, next) => {
+  Product.findById(req.params.id).then( data => {
+    res.status(200).send(data);
+  }).catch(error => {
+    res.status(400).send(error);
+  });
+}
+
+// Pegando produto pela tag
+exports.getByTag = (req, res, next) => {
+  Product.find({ tags: req.params.tag, active: true }, 'name image manufacturerName line petType description racePorte race age amount indication use slug type howToUse benefits smell materialType tags date').then( data => {
     res.status(200).send(data);
   }).catch(error => {
     res.status(400).send(error);
