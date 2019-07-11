@@ -1,7 +1,15 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+const mongoose = require('mongoose');
 
 const app = express();
+
+mongoose.connect('mongodb://brunobsousa:cabelera123@ds062438.mlab.com:62438/petita_petshop', {
+  useCreateIndex: true,
+  useNewUrlParser: true
+});
+
+const Product = require('./models/product');
 
 // Carregar rotas
 const indexRoute = require('./routes/index-route');

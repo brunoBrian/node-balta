@@ -1,8 +1,16 @@
 'use strict';
+const mongoose = require('mongoose');
 
+const Product = mongoose.model('Product');
+ 
 // Criando um registro na api
 exports.post = (req, res, next) => {
-  res.status(201).send(req.body);
+  var product = new Product(req.body);
+  product.save().then( response => {
+    res.status(200).send({message: 'Produto cadastrado com sucesso!'});
+  }).catch(error => {
+    res.status(400).send({message: 'Falha ao cadastrar produto', data: error});
+  });
 };
 
 // Atualizando um registro na api
