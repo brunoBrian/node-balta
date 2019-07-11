@@ -1,0 +1,1 @@
+* Na edição, ativar ou inativar um produto

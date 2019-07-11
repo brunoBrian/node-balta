@@ -79,6 +79,11 @@ const schema = new Schema({
     type: String,
     trim: true
   },
+  active: {
+    type: Boolean,
+    required: true,
+    default: true
+  },
   tags: [{
     type: String,
     required: true
