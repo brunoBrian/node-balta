@@ -51,11 +51,33 @@ exports.post = (req, res, next) => {
 
 // Atualizando um registro na api
 exports.put = (req, res, next) => {
-  const id = req.params.id;
-  
-  res.status(200).send({ 
-    id: id,
-    item: req.body
+  Product.findByIdAndUpdate(req.params.id, {
+    $set: {
+      name: req.body.name,
+      slug: req.body.slug,
+      manufacturerName: req.body.manufacturerName,
+      line: req.body.line,
+      petType: req.body.petType,
+      description: req.body.description,
+      racePorte: req.body.racePorte,
+      race: req.body.race,
+      age: req.body.age,
+      amount: req.body.amount,
+      indication: req.body.indication,
+      use: req.body.use,
+      type: req.body.type,
+      howToUse: req.body.howToUse,
+      benefits: req.body.benefits,
+      smell: req.body.smell,
+      materialType: req.body.materialType,
+      active: req.body.active,
+      imageURL: req.body.imageURL,
+      tags: req.body.tags
+    }
+  }).then( response => {
+    res.status(200).send({message: 'Produto atualizado com sucesso!'});
+  }).catch(error => {
+    res.status(400).send({message: 'Falha ao atualizar produto', data: error});
   });
 };
 
