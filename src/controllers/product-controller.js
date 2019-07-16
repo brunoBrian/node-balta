@@ -2,10 +2,13 @@
 const mongoose = require('mongoose');
 
 const Product = mongoose.model('Product');
+const ValidationsContract = require('../validators/validations');
+const repository = require('../repositories/product-repositories');
 
 // Listando produtos
 exports.get = (req, res, next) => {
-  Product.find({ active: true }, 'name manufacturerName image line petType description racePorte race age amount indication use slug type howToUse benefits smell materialType tags date').then( data => {
+  repository.get()
+  .then( data => {
     res.status(200).send(data);
   }).catch(error => {
     res.status(400).send(error);
@@ -14,7 +17,8 @@ exports.get = (req, res, next) => {
 
 // Pegando produto pelo slug
 exports.getBySlug = (req, res, next) => {
-  Product.findOne({ slug: req.params.slug, active: true }, 'name image manufacturerName line petType description racePorte race age amount indication use slug type howToUse benefits smell materialType tags date').then( data => {
+  repository.getBySlug(req.params.slug)
+  .then( data => {
     res.status(200).send(data);
   }).catch(error => {
     res.status(400).send(error);
@@ -23,7 +27,8 @@ exports.getBySlug = (req, res, next) => {
 
 // Pegando produto pelo id
 exports.getById = (req, res, next) => {
-  Product.findById(req.params.id).then( data => {
+  repository.getById(req.params.id)
+  .then( data => {
     res.status(200).send(data);
   }).catch(error => {
     res.status(400).send(error);
@@ -32,7 +37,8 @@ exports.getById = (req, res, next) => {
 
 // Pegando produto pela tag
 exports.getByTag = (req, res, next) => {
-  Product.find({ tags: req.params.tag, active: true }, 'name image manufacturerName line petType description racePorte race age amount indication use slug type howToUse benefits smell materialType tags date').then( data => {
+  repository.getByTag(req.params.tag)
+  .then( data => {
     res.status(200).send(data);
   }).catch(error => {
     res.status(400).send(error);
@@ -41,8 +47,19 @@ exports.getByTag = (req, res, next) => {
  
 // Criando um registro na api
 exports.post = (req, res, next) => {
-  var product = new Product(req.body);
-  product.save().then( response => {
+  let contract = new ValidationsContract();
+
+  contract.hasMinLen(req.body.name, 2, 'O nome deve ter pelo menos 2 caracteres');
+  contract.hasMinLen(req.body.manufacturerName, 2, 'O nome do fabricante deve ter pelo menos 2 caracteres');
+  contract.isRequired(req.body.name, 'O nome deve ter pelo menos 2 caracteres');
+
+  if(!contract.isValid()) {
+    res.status(400).send(contract.errors()).end();
+    return;
+  }
+
+  repository.create(req.body)
+  .then( response => {
     res.status(201).send({message: 'Produto cadastrado com sucesso!'});
   }).catch(error => {
     res.status(400).send({message: 'Falha ao cadastrar produto', data: error});
@@ -51,30 +68,8 @@ exports.post = (req, res, next) => {
 
 // Atualizando um registro na api
 exports.put = (req, res, next) => {
-  Product.findByIdAndUpdate(req.params.id, {
-    $set: {
-      name: req.body.name,
-      slug: req.body.slug,
-      manufacturerName: req.body.manufacturerName,
-      line: req.body.line,
-      petType: req.body.petType,
-      description: req.body.description,
-      racePorte: req.body.racePorte,
-      race: req.body.race,
-      age: req.body.age,
-      amount: req.body.amount,
-      indication: req.body.indication,
-      use: req.body.use,
-      type: req.body.type,
-      howToUse: req.body.howToUse,
-      benefits: req.body.benefits,
-      smell: req.body.smell,
-      materialType: req.body.materialType,
-      active: req.body.active,
-      imageURL: req.body.imageURL,
-      tags: req.body.tags
-    }
-  }).then( response => {
+  repository.update(req.params.id, req.body)
+  .then( response => {
     res.status(200).send({message: 'Produto atualizado com sucesso!'});
   }).catch(error => {
     res.status(400).send({message: 'Falha ao atualizar produto', data: error});
@@ -83,5 +78,10 @@ exports.put = (req, res, next) => {
 
 // Deletando um registro na api
 exports.delete = (req, res, next) => {
-  res.status(200).send(req.body);
+  repository.remove(req.body.id)
+  .then( data => {
+    res.status(200).send({message: 'Produto removido com sucesso!'});
+  }).catch(error => {
+    res.status(400).send({message: 'Falha ao remover produto', data: error});
+  });
 };

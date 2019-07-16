@@ -6,7 +6,8 @@ const app = express();
 
 mongoose.connect('mongodb://brunobsousa:cabelera123@ds062438.mlab.com:62438/petita_petshop', {
   useCreateIndex: true,
-  useNewUrlParser: true
+  useNewUrlParser: true,
+  useFindAndModify: false
 });
 
 const Product = require('./models/product');
