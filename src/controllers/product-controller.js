@@ -6,47 +6,55 @@ const ValidationsContract = require('../validators/validations');
 const repository = require('../repositories/product-repositories');
 
 // Listando produtos
-exports.get = (req, res, next) => {
-  repository.get()
-  .then( data => {
+exports.get = async (req, res, next) => {
+  try {
+    const data = await repository.get();
     res.status(200).send(data);
-  }).catch(error => {
-    res.status(400).send(error);
-  });
+  } catch(error) {
+    res.status(400).send({
+      message: 'Falha ao listar produtos'
+    });
+  }
 }
 
 // Pegando produto pelo slug
-exports.getBySlug = (req, res, next) => {
-  repository.getBySlug(req.params.slug)
-  .then( data => {
+exports.getBySlug = async (req, res, next) => {
+  try {
+    const data = await repository.getBySlug(req.params.slug);
     res.status(200).send(data);
-  }).catch(error => {
-    res.status(400).send(error);
-  });
+  } catch(error) {
+    res.status(500).send({
+      message: 'Falha ao listar produtos'
+    });
+  }
 }
 
 // Pegando produto pelo id
-exports.getById = (req, res, next) => {
-  repository.getById(req.params.id)
-  .then( data => {
+exports.getById = async (req, res, next) => {
+  try {
+    const data = await repository.getById(req.params.id);
     res.status(200).send(data);
-  }).catch(error => {
-    res.status(400).send(error);
-  });
+  } catch(error) {
+    res.status(500).send({
+      message: 'Falha ao processar requisição'
+    });
+  }
 }
 
 // Pegando produto pela tag
-exports.getByTag = (req, res, next) => {
-  repository.getByTag(req.params.tag)
-  .then( data => {
+exports.getByTag = async (req, res, next) => {
+  try {
+    const data = await repository.getByTag(req.params.tag);
     res.status(200).send(data);
-  }).catch(error => {
-    res.status(400).send(error);
-  });
+  }catch(error) {
+    res.status(500).send({ 
+      message: 'Erro ao processar requisição'
+    });
+  };
 }
  
 // Criando um registro na api
-exports.post = (req, res, next) => {
+exports.post = async (req, res, next) => {
   let contract = new ValidationsContract();
 
   contract.hasMinLen(req.body.name, 2, 'O nome deve ter pelo menos 2 caracteres');
@@ -58,30 +66,42 @@ exports.post = (req, res, next) => {
     return;
   }
 
-  repository.create(req.body)
-  .then( response => {
-    res.status(201).send({message: 'Produto cadastrado com sucesso!'});
-  }).catch(error => {
-    res.status(400).send({message: 'Falha ao cadastrar produto', data: error});
-  });
+  try {
+    await repository.create(req.body);
+    res.status(201).send({
+      message: 'Produto cadastrado com sucesso!'
+    });
+  } catch(error) {
+    res.status(500).send({
+      message: 'Falha ao cadastrar produto'
+    });
+  }
 };
 
 // Atualizando um registro na api
-exports.put = (req, res, next) => {
-  repository.update(req.params.id, req.body)
-  .then( response => {
-    res.status(200).send({message: 'Produto atualizado com sucesso!'});
-  }).catch(error => {
-    res.status(400).send({message: 'Falha ao atualizar produto', data: error});
-  });
+exports.put = async (req, res, next) => {
+  try {
+    await repository.update(req.params.id, req.body);
+    res.status(200).send({
+      message: 'Produto atualizado com sucesso!'
+    });
+  } catch(error) {
+    res.status(400).send({
+      message: 'Falha ao atualizar produto'
+    });
+  }
 };
 
 // Deletando um registro na api
-exports.delete = (req, res, next) => {
-  repository.remove(req.body.id)
-  .then( data => {
-    res.status(200).send({message: 'Produto removido com sucesso!'});
-  }).catch(error => {
-    res.status(400).send({message: 'Falha ao remover produto', data: error});
-  });
+exports.delete = async (req, res, next) => {
+  try {
+    await repository.remove(req.body.id);
+    res.status(200).send({
+      message: 'Produto removido com sucesso!'
+    });
+  } catch(error) {
+    res.status(400).send({
+      message: 'Falha ao remover produto'
+    });
+  };
 };

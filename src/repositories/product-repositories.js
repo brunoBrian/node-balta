@@ -3,29 +3,39 @@
 const mongoose = require('mongoose');
 const Product = mongoose.model('Product');
 
-exports.get = () => {
-  return Product.find({ active: true }, 'name manufacturerName image line petType description racePorte race age amount indication use slug type howToUse benefits smell materialType tags date');
+exports.get = async () => {
+  const response = await Product.find({ active: true }, 'name manufacturerName image line petType description racePorte race age amount indication use slug type howToUse benefits smell materialType tags date');
+
+  return response;
 }
 
-exports.getBySlug = slug => {
-  return Product.findOne({ slug: slug, active: true }, 'name image manufacturerName line petType description racePorte race age amount indication use slug type howToUse benefits smell materialType tags date');
+exports.getBySlug = async slug => {
+  const response = Product.findOne({ slug: slug, active: true }, 'name image manufacturerName line petType description racePorte race age amount indication use slug type howToUse benefits smell materialType tags date');
+
+  return response;
 }
 
-exports.getById = id => {
-  return Product.findById(id);
+exports.getById = async id => {
+  const response = Product.findById(id);
+
+  return response;
 }
 
-exports.getByTag = tag => {
-  return Product.find({ tags: tag, active: true }, 'name image manufacturerName line petType description racePorte race age amount indication use slug type howToUse benefits smell materialType tags date');
+exports.getByTag = async tag => {
+
+  const response = Product.find({ tags: tag, active: true }, 'name image manufacturerName line petType description racePorte race age amount indication use slug type howToUse benefits smell materialType tags date active');
+
+  return response;
 }
 
-exports.create = data => {
-  var product = new Product(data);
-  return product.save();
+exports.create = async data => {
+  let product = new Product(data);
+  
+  await product.save();
 }
 
-exports.update = (id, data) => {
-  return Product.findByIdAndUpdate(id, {
+exports.update = async (id, data) => {
+  await Product.findByIdAndUpdate(id, {
     $set: {
       name: data.name,
       slug: data.slug,
@@ -51,6 +61,6 @@ exports.update = (id, data) => {
   });
 }
 
-exports.remove = id => {
-  return Product.findOneAndRemove(id);
+exports.remove = async id => {
+  await Product.findOneAndRemove(id);
 }
