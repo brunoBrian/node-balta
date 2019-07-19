@@ -2,6 +2,7 @@
 
 const ValidationsContract = require('../validators/validations');
 const repository = require('../repositories/customer-repositories');
+const md5 = require('md5');
 
 // Listando contas
 exports.get = async (req, res, next) => {
@@ -18,6 +19,7 @@ exports.get = async (req, res, next) => {
 // Criando um registro na api do customer
 exports.post = async (req, res, next) => {
   let contract = new ValidationsContract();
+  const { name, email, password } = req.body;
 
   contract.hasMinLen(req.body.name, 3, 'O nome deve ter pelo menos 3 caracteres');
   contract.isEmail(req.body.email, 'E-mail inválido!');
@@ -29,7 +31,11 @@ exports.post = async (req, res, next) => {
   }
 
   try {
-    await repository.create(req.body);
+    await repository.create({
+      name,
+      email,
+      password: md5(password + global.SALT_KEY)
+    });
     res.status(201).send({
       message: 'Cliente cadastrado com sucesso!'
     });

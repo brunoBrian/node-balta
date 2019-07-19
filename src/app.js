@@ -2,9 +2,10 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 
+const config = require('./config');
 const app = express();
 
-mongoose.connect('mongodb://brunobsousa:cabelera123@ds062438.mlab.com:62438/petita_petshop', {
+mongoose.connect(config.connectionString, {
   useCreateIndex: true,
   useNewUrlParser: true,
   useFindAndModify: false
