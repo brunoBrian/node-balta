@@ -1,8 +1,9 @@
 'use strict';
 
+const md5 = require('md5');
 const ValidationsContract = require('../validators/validations');
 const repository = require('../repositories/customer-repositories');
-const md5 = require('md5');
+const emailService = require('../services/email-service');
 
 // Listando contas
 exports.get = async (req, res, next) => {
@@ -36,6 +37,13 @@ exports.post = async (req, res, next) => {
       email,
       password: md5(password + global.SALT_KEY)
     });
+
+    emailService.send(
+      req.body.email, 
+      'Bem vindo à Petita Petshop', 
+      global.EMAIL_TMPL.replace('{0}', req.body.name)
+    );
+
     res.status(201).send({
       message: 'Cliente cadastrado com sucesso!'
     });
