@@ -1,0 +1,7 @@
+App para usar no desktop:
+https://azure.microsoft.com/en-us/features/storage-explorer/
+
+Endereço onde as imagens estão armazenadas: https://portal.azure.com/#blade/Microsoft_Azure_Storage/ContainerMenuBlade/overview/storageAccountId/%2Fsubscriptions%2F72a4dc56-01f4-47cd-84aa-870af3434408%2FresourceGroups%2Fnodepetita%2Fproviders%2FMicrosoft.Storage%2FstorageAccounts%2Fpetitapetshop/path/product-images/etag/%220x8D70F8C77D1C53B%22
+
+Onde o BD se encontra:
+https://mlab.com/login/

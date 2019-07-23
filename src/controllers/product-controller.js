@@ -1,7 +1,11 @@
 'use strict';
 
+const azure = require('azure-storage');
+const guid = require('guid');
+
 const ValidationsContract = require('../validators/validations');
 const repository = require('../repositories/product-repositories');
+const config = require('../config');
 
 // Listando produtos
 exports.get = async (req, res, next) => {
@@ -54,10 +58,12 @@ exports.getByTag = async (req, res, next) => {
 // Criando um registro na api
 exports.post = async (req, res, next) => {
   let contract = new ValidationsContract();
+  let data = req.body;
+  let { imageURL } = data;
 
-  contract.hasMinLen(req.body.name, 2, 'O nome deve ter pelo menos 2 caracteres');
-  contract.hasMinLen(req.body.manufacturerName, 2, 'O nome do fabricante deve ter pelo menos 2 caracteres');
-  contract.isRequired(req.body.name, 'O nome deve ter pelo menos 2 caracteres');
+  contract.hasMinLen(data.name, 2, 'O nome deve ter pelo menos 2 caracteres');
+  contract.hasMinLen(data.manufacturerName, 2, 'O nome do fabricante deve ter pelo menos 2 caracteres');
+  contract.isRequired(data.name, 'O nome deve ter pelo menos 2 caracteres');
 
   if(!contract.isValid()) {
     res.status(400).send(contract.errors()).end();
@@ -65,7 +71,27 @@ exports.post = async (req, res, next) => {
   }
 
   try {
-    await repository.create(req.body);
+    const blobSvc = azure.createBlobService(config.containerConnectionString);
+    
+    let filename = guid.raw().toString() + '.jpg'; // Encriptando a imagem
+    let rawData = imageURL;
+    let matches = rawData.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/); // Remove cabeçalho da imagem que foi gerada
+    let type = matches[1];
+    let buffer = new Buffer(matches[2], 'base64');
+
+    // Salvando a imagem
+    await blobSvc.createBlockBlobFromText('product-images', filename, buffer, {
+      contentType: type
+    }, function(error, result, response) {
+      if (error) {
+        filename = 'default-product.png'
+      }
+    });
+
+    await repository.create({
+      ...data,
+      imageURL: 'https://petitapetshop.blob.core.windows.net/product-images/' + filename
+    });
     res.status(201).send({
       message: 'Produto cadastrado com sucesso!'
     });

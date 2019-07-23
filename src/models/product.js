@@ -86,7 +86,8 @@ const schema = new Schema({
   },
   imageURL: {
     type: String,
-    // required: true,
+    required: true,
+    trim: true
   },
   tags: [{
     type: String,

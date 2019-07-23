@@ -4,7 +4,7 @@ const mongoose = require('mongoose');
 const Product = mongoose.model('Product');
 
 exports.get = async () => {
-  const response = await Product.find({ active: true }, 'name manufacturerName image line petType description racePorte race age amount indication use slug type howToUse benefits smell materialType tags date');
+  const response = await Product.find({ active: true }, 'name manufacturerName imageURL line petType description racePorte race age amount indication use slug type howToUse benefits smell materialType tags date');
 
   return response;
 }
