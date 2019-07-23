@@ -4,6 +4,7 @@ const md5 = require('md5');
 const ValidationsContract = require('../validators/validations');
 const repository = require('../repositories/customer-repositories');
 const emailService = require('../services/email-service');
+const authService = require('../services/auth-service');
 
 // Listando contas
 exports.get = async (req, res, next) => {
@@ -53,3 +54,40 @@ exports.post = async (req, res, next) => {
     });
   }
 };
+
+// Autenticando Customer
+exports.authenticate = async (req, res, next) => {
+  const { email, password } = req.body;
+
+  try {
+    const customer = await repository.authenticate({
+      email,
+      password: md5(password + global.SALT_KEY)
+    });
+
+    if(!customer) {
+      res.status(404).send({
+        message: 'Usuário ou senha Inválidos'
+      });
+      return;
+    }
+    
+    const token = await authService.generateToken({
+      email: customer.email,
+      name: customer.name,
+    })
+
+    res.status(201).send({
+      token,
+      data: {
+        email: customer.email,
+        name: customer.name,
+      }
+    });
+
+  } catch(error) {
+    res.status(400).send({
+      message: 'Falha ao gerar token'
+    });
+  }
+}

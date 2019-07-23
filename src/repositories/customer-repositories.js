@@ -9,6 +9,16 @@ exports.get = async () => {
   return response;
 }
 
+exports.authenticate = async data => {
+  
+  const response = await Customer.findOne({
+    email: data.email,
+    password: data.password
+  });
+
+  return response;
+}
+
 exports.create = async data => {
   let customer = new Customer(data);
   
