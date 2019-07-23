@@ -21,7 +21,7 @@ exports.get = async (req, res, next) => {
 // Criando um registro na api do customer
 exports.post = async (req, res, next) => {
   let contract = new ValidationsContract();
-  const { name, email, password } = req.body;
+  const { name, email, password, _id } = req.body;
 
   contract.hasMinLen(req.body.name, 3, 'O nome deve ter pelo menos 3 caracteres');
   contract.isEmail(req.body.email, 'E-mail inválido!');
@@ -34,6 +34,7 @@ exports.post = async (req, res, next) => {
 
   try {
     await repository.create({
+      id: _id,
       name,
       email,
       password: md5(password + global.SALT_KEY)
@@ -73,6 +74,7 @@ exports.authenticate = async (req, res, next) => {
     }
     
     const token = await authService.generateToken({
+      id: customer._id,
       email: customer.email,
       name: customer.name,
     })

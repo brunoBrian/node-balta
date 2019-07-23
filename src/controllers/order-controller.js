@@ -3,6 +3,7 @@
 const ValidationsContract = require('../validators/validations');
 const repository = require('../repositories/order-repositories');
 const guid = require('guid');
+const authService = require('../services/auth-service');
 
 // Listando pedidos
 exports.get = async (req, res, next) => {
@@ -18,14 +19,15 @@ exports.get = async (req, res, next) => {
 
 // Criando um registro na api do customer
 exports.post = async (req, res, next) => {
-  let data = {
-    customer: req.body.customer,
-    number: guid.raw(),
-    items: req.body.items
-  };
-
   try {
-    await repository.create(data);
+    const token = req.body.token || req.query.token || req.headers['x-access-token'];
+    const data = await authService.decodeToken(token);
+
+    await repository.create({
+      customer: data.id,
+      number: guid.raw(),
+      items: req.body.items
+    });
     res.status(201).send({
       message: 'Pedido criado com sucesso!'
     });
