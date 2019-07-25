@@ -19,6 +19,13 @@ exports.authenticate = async data => {
   return response;
 }
 
+exports.getById = async id => {
+  
+  const response = await Customer.findById(id);
+
+  return response;
+}
+
 exports.create = async data => {
   let customer = new Customer(data);
   

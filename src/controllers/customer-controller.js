@@ -93,3 +93,39 @@ exports.authenticate = async (req, res, next) => {
     });
   }
 }
+
+// Gerando Refresh Token do Customer
+exports.refreshToken = async (req, res, next) => {
+  try {
+    const token = req.body.token || req.query.token || req.headers['x-access-token'];
+    const data = await authService.decodeToken(token);
+
+    const customer = await repository.getById(data.id)
+
+    if(!customer) {
+      res.status(404).send({
+        message: 'Cliente não encontrado'
+      });
+      return;
+    }
+    
+    const tokenData = await authService.generateToken({
+      id: customer._id,
+      email: customer.email,
+      name: customer.name,
+    })
+
+    res.status(201).send({
+      tokenData,
+      data: {
+        email: customer.email,
+        name: customer.name,
+      }
+    });
+
+  } catch(error) {
+    res.status(400).send({
+      message: 'Falha ao gerar token'
+    });
+  }
+}
