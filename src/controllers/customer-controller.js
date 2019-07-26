@@ -37,7 +37,8 @@ exports.post = async (req, res, next) => {
       id: _id,
       name,
       email,
-      password: md5(password + global.SALT_KEY)
+      password: md5(password + global.SALT_KEY),
+      roles: ['user']
     });
 
     emailService.send(
@@ -50,6 +51,7 @@ exports.post = async (req, res, next) => {
       message: 'Cliente cadastrado com sucesso!'
     });
   } catch(error) {
+    console.log(error)
     res.status(500).send({
       message: 'Falha ao cadastrar cliente'
     });
@@ -77,6 +79,7 @@ exports.authenticate = async (req, res, next) => {
       id: customer._id,
       email: customer.email,
       name: customer.name,
+      roles: customer.roles
     })
 
     res.status(201).send({
@@ -84,6 +87,7 @@ exports.authenticate = async (req, res, next) => {
       data: {
         email: customer.email,
         name: customer.name,
+        roles: customer.roles
       }
     });
 
@@ -113,6 +117,7 @@ exports.refreshToken = async (req, res, next) => {
       id: customer._id,
       email: customer.email,
       name: customer.name,
+      roles: customer.roles
     })
 
     res.status(201).send({
